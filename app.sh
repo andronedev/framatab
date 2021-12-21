@@ -2,20 +2,15 @@
 CURRENT_VERSION=1.0.0 # Use this as version number for the app if you don't have a version file
 
 self_update() {
-version="$(cat version | grep -o '[0-9]\.[0-9]\.[0-9]')"
-# if version is empty, then it is the first time running
-if [ -z "$version" ]; then
-    echo $CURRENT_VERSION > version
-    $version=$CURRENT_VERSION
-fi
+
 SCRIPTDIR=$(dirname $0)
 latest=$(curl -s https://raw.githubusercontent.com/andronedev/framatab/master/version | grep -o '[0-9]\.[0-9]\.[0-9]')
-if [ "$latest" != "$version" ]; then
+if [ "$latest" != "$CURRENT_VERSION" ]; then
     echo "New version available: $latest"
     echo "Updating..."
     curl -s https://raw.githubusercontent.com/andronedev/framatab/master/app.sh > /tmp/app.sh
     chmod +x /tmp/app.sh
-    echo $latest > version
+    mv /tmp/app.sh $SCRIPTDIR/app.sh
     echo "Updated to $latest"
     # run the script again
     $SCRIPTDIR/app.sh $@
