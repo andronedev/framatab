@@ -14,7 +14,7 @@ if [ "$latest" != "$version" ]; then
     echo "Updating..."
     curl -s https://raw.githubusercontent.com/andronedev/framatab/master/app.sh > /tmp/app.sh
     chmod +x /tmp/app.sh
-    mv /tmp/app.sh $SCRIPTDIR/app.sh
+    echo $latest > version
     echo "Updated to $latest"
     # run the script again
     $SCRIPTDIR/app.sh $@
