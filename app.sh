@@ -1,27 +1,25 @@
 #!/bin/sh
-
-SCRIPT=$(readlink -f "$0")
-SCRIPTPATH=$(dirname "$SCRIPT")
-SCRIPTNAME="$0"
-ARGS="$@"
-BRANCH="master"
+CURRENT_VERSION=1.0.0 # Use this as version number for the app if you don't have a version file
 
 self_update() {
-    cd $SCRIPTPATH
-    git fetch
-    echo "Checking updates..."
-    [ -n $(git diff --name-only origin/$BRANCH | grep $SCRIPTNAME) ] && {
-        echo "Found a new version of me, updating myself..."
-        git pull --force
-        git checkout $BRANCH
-        git pull --force
-        echo "Running the new version..."
-        exec "$SCRIPTNAME" "$@"
-
-        # Now exit this old instance
-        exit 1
-    }
-    echo "Already the latest version."
+version="$(cat version | grep -o '[0-9]\.[0-9]\.[0-9]')"
+# if version is empty, then it is the first time running
+if [ -z "$version" ]; then
+    echo CURRENT_VERSION > version
+fi
+SCRIPTDIR=$(dirname $0)
+latest=$(curl -s https://raw.githubusercontent.com/andronedev/framatab/master/version | grep -o '[0-9]\.[0-9]\.[0-9]')
+if [ "$latest" != "$version" ]; then
+    echo "New version available: $latest"
+    echo "Updating..."
+    curl -s https://raw.githubusercontent.com/andronedev/framatab/master/app.sh > /tmp/app.sh
+    chmod +x /tmp/app.sh
+    mv /tmp/app.sh $SCRIPTDIR/app.sh
+    echo "Updated to $latest"
+    # run the script again
+    $SCRIPTDIR/app.sh $@
+    exit 0
+fi
 }
 self_update
 # check if args are min 2
