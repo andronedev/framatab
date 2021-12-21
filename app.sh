@@ -6,6 +6,7 @@ version="$(cat version | grep -o '[0-9]\.[0-9]\.[0-9]')"
 # if version is empty, then it is the first time running
 if [ -z "$version" ]; then
     echo $CURRENT_VERSION > version
+    $version=$CURRENT_VERSION
 fi
 SCRIPTDIR=$(dirname $0)
 latest=$(curl -s https://raw.githubusercontent.com/andronedev/framatab/master/version | grep -o '[0-9]\.[0-9]\.[0-9]')
