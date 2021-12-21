@@ -1,23 +1,22 @@
 #!/bin/sh
-CURRENT_VERSION=1.0.0 # Use this as version number for the app if you don't have a version file
-
+DEBUG=false
 self_update() {
-
 SCRIPTDIR=$(dirname $0)
-latest=$(curl -s https://raw.githubusercontent.com/andronedev/framatab/master/version | grep -o '[0-9]\.[0-9]\.[0-9]')
-if [ "$latest" != "$CURRENT_VERSION" ]; then
-    echo "New version available: $latest"
-    echo "Updating..."
-    curl -s https://raw.githubusercontent.com/andronedev/framatab/master/app.sh > /tmp/app.sh
-    chmod +x /tmp/app.sh
-    mv /tmp/app.sh $SCRIPTDIR/app.sh
-    echo "Updated to $latest"
-    # run the script again
-    $SCRIPTDIR/app.sh $@
-    exit 0
+latest_code=$(curl -s https://raw.githubusercontent.com/andronedev/framatab/master/app.sh)
+
+
+if [ "$latest_code" != "$(cat $SCRIPTDIR/app.sh)" ]; then
+    echo "Updating app.sh"
+    echo "$latest_code" > $SCRIPTDIR/app.sh
+    chmod +x $SCRIPTDIR/app.sh
 fi
 }
-self_update
+if [ "$DEBUG" = false ]; then
+    self_update
+else
+    echo "DEBUG MODE"
+fi
+
 # check if args are min 2
 if [ $# -lt 1 ]; then
     echo "Usage: $0 <start|stop|reboot>"
