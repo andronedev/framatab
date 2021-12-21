@@ -5,7 +5,6 @@
 
 - adb (android debug bridge)
 - imagemagick (for command convert)
-- git (for auto update)
 
 ## Start the diapo:
 ./app.sh start <time> <folder of immage>
