@@ -1,5 +1,29 @@
 #!/bin/sh
 
+SCRIPT=$(readlink -f "$0")
+SCRIPTPATH=$(dirname "$SCRIPT")
+SCRIPTNAME="$0"
+ARGS="$@"
+BRANCH="master"
+
+self_update() {
+    cd $SCRIPTPATH
+    git fetch
+    echo "Checking updates..."
+    [ -n $(git diff --name-only origin/$BRANCH | grep $SCRIPTNAME) ] && {
+        echo "Found a new version of me, updating myself..."
+        git pull --force
+        git checkout $BRANCH
+        git pull --force
+        echo "Running the new version..."
+        exec "$SCRIPTNAME" "$@"
+
+        # Now exit this old instance
+        exit 1
+    }
+    echo "Already the latest version."
+}
+self_update
 # check if args are min 2
 if [ $# -lt 1 ]; then
     echo "Usage: $0 <start|stop|reboot>"
